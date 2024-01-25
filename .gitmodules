@@ -1,0 +1,9 @@
+[submodule "Moonloit"]
+	path = Moonloit
+	url = https://github.com/goofyahhvic/Moonloit.git
+[submodule "MoonlightVxl/submods/glfw3"]
+	path = MoonlightVxl/submods/glfw3
+	url = https://github.com/glfw/glfw.git
+[submodule "MoonlightVxl/submods/imgui"]
+	path = MoonlightVxl/submods/imgui
+	url = https://github.com/ocornut/imgui.git
