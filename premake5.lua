@@ -67,7 +67,6 @@ project "MoonlightVxl"
     links {
         "Moonloit",
         "glfw3",
-        "glad",
         "imgui",
 		"vulkan-1"
     }
@@ -81,11 +80,7 @@ project "MoonlightVxl"
         buildoptions {
             "/Zc:__cplusplus"
         }
-
-        postbuildcommands {
-            ("{COPY} %{cfg.buildtarget.relpath} ../bin/" .. output_dir .. "/vxp")
-        }
-
+        
         defines {
             "MLT_PLATFORM_WINDOWS"
         }
