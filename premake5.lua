@@ -1,11 +1,3 @@
-workspace "MoonlightVxl"
-    architecture "x64"
-    configurations {
-        "dbg", -- no optimizations at all
-        "rel", -- debug but with less stuff but still with logging and etc
-        "dist" -- everything debug related stripped
-    }
-
 output_dir = "%{cfg.buildcfg}-%{cfg.system}"
 include_dir = {}
 lib_dir = {}
@@ -65,13 +57,19 @@ project "MoonlightVxl"
         "%{include_dir.glad}",
         "%{include_dir.glm}",
         "%{include_dir.imgui}",
+		os.getenv("VULKAN_SDK") .. "/Include/",
         "%{include_dir.submods}"
     }
+	libdirs {
+		os.getenv("VULKAN_SDK") .. "/Lib/"
+	}
+	
     links {
         "Moonloit",
         "glfw3",
         "glad",
-        "imgui"
+        "imgui",
+		"vulkan-1"
     }
     defines {
         "VXL_STATIC_LIB",
@@ -119,90 +117,7 @@ project "MoonlightVxl"
             "MLT_DISTRIBUTION"
         }
 
-project "vxp"
-    location "%{prj.name}"
-    kind "ConsoleApp"
 
-    staticruntime "off"
-
-    language "C++"
-    cppdialect "C++17"
-      
-    targetdir("bin/" ..  output_dir .. "/%{prj.name}/")
-    objdir("bin-int/" ..  output_dir .. "/%{prj.name}/")
-
-    pchheader "vxp_pch.hpp"
-    pchsource "vxp/src/vxp_pch.cpp"
-
-    files {
-        "%{prj.name}/src/**.hpp",
-		"%{prj.name}/src/**.h",
-        "%{prj.name}/src/**.cpp",
-		"%{prj.name}/src/**.c"
-    }
-    includedirs {
-        "%{prj.name}/src/",
-        "%{MoonlightVxl_src}",
-        "%{MoonlightVxl_src}MoonlightVxl",
-        "%{include_dir.MoonlightVxl}",
-        "%{include_dir.MoonlightVxl}MoonlightVxl",
-        "%{include_dir.Moonloit}",
-        "%{include_dir.Moonloit}Moonloit",
-        "%{moonloit_src}",
-        "%{moonloit_src}Moonloit",
-        "%{include_dir.spdlog}",
-        "%{include_dir.glad}",
-        "%{include_dir.glfw3}",
-        "%{include_dir.glm}",
-        "%{include_dir.imgui}",
-        "%{include_dir.submods}"
-    }
-    defines {
-        "GLAD_GLAPI_EXPORT"
-    }
-    links {
-        "Moonloit",
-        "glad",
-        "imgui",
-        "MoonlightVxl"
-    }
-
-    filter "system:windows"
-        systemversion "latest"
-        buildoptions {
-            "/Zc:__cplusplus"
-        }
-
-        defines {
-            "MLT_PLATFORM_WINDOWS"
-        }
-		
-    filter "system:linux"
-        systemversion "latest"
-        toolset "clang"
-
-        defines {
-            "MLT_PLATFORM_LINUX"
-        }
-     
-    filter "configurations:dbg"
-        symbols "On"
-        defines {
-            "MLT_DEBUG",
-            "MLT_ASSERTIONS_ENABLED"
-        }
-    filter "configurations:rel"
-        optimize "speed"
-        symbols "off"
-        defines {
-            "MLT_RELEASE"
-        }
-    filter "configurations:dist"
-        optimize "speed"
-        symbols "off"
-        defines {
-            "MLT_DISTRIBUTION"
-        }
 
 project "glfw3"
     location "MoonlightVxl/submods/%{prj.name}"

@@ -28,7 +28,7 @@ namespace vxl {
 			: KeyEvent(keycode), repeat_count(repeat_count) {}
 		~KeyPressedEvent() {}
 	public:
-		std::string to_string() const override { return fmt::format("KeyPressedEvent: {0}, {1}", keycode, repeat_count); }
+		std::string ToString() const override { return fmt::format("KeyPressedEvent: {0}, {1}", keycode, repeat_count); }
 
 		EVENT_CLASS_TYPE(KeyPressed)
 	private:
@@ -41,7 +41,7 @@ namespace vxl {
 			: KeyEvent(keycode) {}
 		~KeyReleasedEvent() {}
 	public:
-		std::string to_string() const override { return fmt::format("KeyReleasedeEvent: {0}", keycode); }
+		std::string ToString() const override { return fmt::format("KeyReleasedeEvent: {0}", keycode); }
 		EVENT_CLASS_TYPE(KeyReleased)
 	};
 

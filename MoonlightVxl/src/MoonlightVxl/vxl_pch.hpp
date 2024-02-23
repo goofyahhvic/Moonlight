@@ -14,4 +14,8 @@
 #include <unordered_map>
 #include <unordered_set>
 
+#ifdef MLT_PLATFORM_WINDOWS
+#include <Windows.h>
+#endif
+
 #include <Moonloit/mlt_log.hpp>

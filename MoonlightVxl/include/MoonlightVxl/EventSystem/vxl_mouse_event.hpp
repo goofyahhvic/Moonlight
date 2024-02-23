@@ -19,7 +19,7 @@ namespace vxl {
 		inline double get_x() const { return this->x; }
 		inline double get_y() const { return this->y; }
 
-		inline std::string to_string() const override {	return fmt::format("MouseMovedEvent: {0}, {1}", x, y); }
+		inline std::string ToString() const override {	return fmt::format("MouseMovedEvent: {0}, {1}", x, y); }
 
 		EVENT_CLASS_TYPE(MouseMoved)
 		EVENT_CLASS_CATEGORY(EventCategoryMouse | EventCategoryInput)
@@ -35,7 +35,7 @@ namespace vxl {
 		inline double get_x_offset() const { return x_offset;  }
 		inline double get_y_offset() const { return y_offset;  }
 
-		inline std::string to_string() const override { return fmt::format("MouseScrolledEvent: {0}, {1}", x_offset, y_offset); }
+		inline std::string ToString() const override { return fmt::format("MouseScrolledEvent: {0}, {1}", x_offset, y_offset); }
 
 		EVENT_CLASS_TYPE(MouseScrolled)
 		EVENT_CLASS_CATEGORY(EventCategoryMouse | EventCategoryInput)
@@ -59,7 +59,7 @@ namespace vxl {
 			: MouseButtonEvent(button) {}
 		~MouseButtonPressedEvent() {}
 	public:
-		inline std::string to_string() const override { return fmt::format("MouseButtonPressedEvent: {0}", button); }
+		inline std::string ToString() const override { return fmt::format("MouseButtonPressedEvent: {0}", button); }
 
 		EVENT_CLASS_TYPE(MouseButtonPressed)
 	};
@@ -70,7 +70,7 @@ namespace vxl {
 			: MouseButtonEvent(button) {}
 		~MouseButtonReleasedEvent() {}
 	public:
-		inline std::string to_string() const override { return fmt::format("MouseButtonReleasedEvent: {0}", button); }
+		inline std::string ToString() const override { return fmt::format("MouseButtonReleasedEvent: {0}", button); }
 
 		EVENT_CLASS_TYPE(MouseButtonReleased)
 	};

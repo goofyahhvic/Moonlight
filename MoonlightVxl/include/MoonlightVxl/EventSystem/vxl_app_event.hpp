@@ -10,7 +10,7 @@ namespace vxl {
 		inline uint32_t get_width() const { return width; }
 		inline uint32_t get_height() const { return height; }
 
-		std::string to_string() const override { return fmt::format("WindowResizeEvent: {0}, {1}", width, height); }
+		std::string ToString() const override { return fmt::format("WindowResizeEvent: {0}, {1}", width, height); }
 
 		EVENT_CLASS_TYPE(WindowResize)
 		EVENT_CLASS_CATEGORY(EventCategoryApplication)

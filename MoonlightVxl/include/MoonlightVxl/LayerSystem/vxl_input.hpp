@@ -8,17 +8,16 @@ namespace vxl {
 	class VXL_API GlobalInput {
 		GlobalInput();
 	public:
-		inline static bool get_key(int32_t keycode);
-		inline static bool get_mouse_button(int32_t id);
+		static bool GetKey(int32_t keycode);
+		static bool GetMouseButton(int32_t id);
 
-		inline static void get_mouse_position(double& _x, double& _y) { _get_mouse_position(); _x = std::get<0>(pos); _y = std::get<1>(pos); }
-		inline static const MousePosition& get_mouse_position() { _get_mouse_position(); return pos; }
-		inline static double get_mouse_x() { _get_mouse_position(); return std::get<0>(pos); }
-		inline static double get_mouse_y() { _get_mouse_position(); return std::get<1>(pos); }
+		inline static void GetMousePosition(double& _x, double& _y) { _GetMousePosition(); _x = std::get<0>(sm_Pos); _y = std::get<1>(sm_Pos); }
+		inline static const MousePosition& GetMousePosition() { _GetMousePosition(); return sm_Pos; }
+		inline static double GetMouseX() { _GetMousePosition(); return std::get<0>(sm_Pos); }
+		inline static double GetMouseY() { _GetMousePosition(); return std::get<1>(sm_Pos); }
+		static void _GetMousePosition();
 	private:
-		static void _get_mouse_position();
-	private:
-		static MousePosition pos;
+		static MousePosition sm_Pos;
 	};
 
 	using KeysArray = std::array<bool, GLFW_KEY_LAST>;
@@ -29,16 +28,16 @@ namespace vxl {
 		Input(bool value = false);
 		virtual ~Input();
 	public:
-		inline KeysArray& get_keys() { return keys; }
-		inline bool& get_key(uint32_t index) { return keys[index]; }
-		inline void set_key(uint32_t index, bool value) { keys[index] = value; }
+		inline KeysArray& GetKeys() { return m_Keys; }
+		inline bool& GetKey(uint32_t index) { return m_Keys[index]; }
+		inline void SetKey(uint32_t index, bool value) { m_Keys[index] = value; }
 
-		inline MouseButtonsArray& get_mouse_buttons() { return mouse_buttons; }
-		inline bool& get_mouse_button(uint32_t index) { return mouse_buttons[index]; }
-		inline void set_mouse_button(uint32_t index, bool value) { mouse_buttons[index] = value; }
+		inline MouseButtonsArray& GetMouseButtons() { return m_MouseButtons; }
+		inline bool& GetMouseButton(uint32_t index) { return m_MouseButtons[index]; }
+		inline void SetMouseButton(uint32_t index, bool value) { m_MouseButtons[index] = value; }
 	private:
-		KeysArray keys;
-		MouseButtonsArray mouse_buttons;
+		KeysArray m_Keys;
+		MouseButtonsArray m_MouseButtons;
 	};
 
 }
