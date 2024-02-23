@@ -3,6 +3,6 @@
 
 namespace vxl {
 	void init() {
-		moonloit::Log::init();
+		mlt::Log::Init();
 	}
 }

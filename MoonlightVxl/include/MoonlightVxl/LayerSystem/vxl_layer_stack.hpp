@@ -11,21 +11,21 @@ namespace vxl {
 		/// 
 		/// Pushes a layer on top of previous layers, but below the overlays.
 		/// 
-		void push_layer(Layer* layer);
+		void PushLayer(Layer* layer);
 		/// 
 		/// Pushes an overlay on top everything else.
 		/// 
-		void push_overlay(Layer* overlay);
-		Layer* pop_layer(Layer* layer);
-		Layer* pop_overlay(Layer* overlay);
+		void PushOverlay(Layer* overlay);
+		Layer* PopLayer(Layer* layer);
+		Layer* PopOverlay(Layer* overlay);
 
-		Layers::iterator begin() { return layers.begin(); }
-		Layers::iterator end() { return layers.end(); }
+		Layers::iterator begin() { return m_Layers.begin(); }
+		Layers::iterator end() { return m_Layers.end(); }
 
-		Layers::reverse_iterator rbegin() { return layers.rbegin(); }
-		Layers::reverse_iterator rend() { return layers.rend(); }
+		Layers::reverse_iterator rbegin() { return m_Layers.rbegin(); }
+		Layers::reverse_iterator rend() { return m_Layers.rend(); }
 	private:
-		 Layers layers;
-		 uint32_t insert_index = 0;
+		 Layers m_Layers;
+		 uint32_t m_InsertIndex = 0;
 	};
 }

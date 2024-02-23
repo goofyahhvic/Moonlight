@@ -1,146 +1,154 @@
 #include "vxl_pch.hpp"
 #include "vxl_window.hpp"
 
-#include <glad/glad.h>
 #include <GLFW/glfw3.h>
+#ifdef MLT_PLATFORM_WINDOWS
+	#define GLFW_EXPOSE_NATIVE_WIN32
+#elif MLT_PLATFORM_LINUX
+	#define GLFW_EXPOSE_NATIVE_X11
+#endif
+#include <GLFW/glfw3native.h>
 
-#include <Moonloit/mlt_exception.hpp>
+#include <Moonloit/Moonloit.hpp>
 #include "EventSystem/vxl_app_event.hpp"
 #include "EventSystem/vxl_key_event.hpp"
 #include "EventSystem/vxl_mouse_event.hpp"
 
 namespace vxl {
-	Window::Window(const uint32_t width, const uint32_t height, const char* title) {
-		data.window_width = width;
-		data.window_height = height;
-		data.on_event = [this](Event& e) {
-			if (e.get_event_type() == EventType::WindowClose) {
-				close();
+	Window* Window::sm_BoundWindow;
+	Window::CloseFn Window::sm_OnBoundDestroy;
+	Window::Windows Window::sm_Windows;
+
+	Window* Window::Create(uint32_t width, uint32_t height, const char* title) {
+		Window* window = new Window();
+		MOONLOIT_ASSERT(window, "Failed creating window!");
+
+		window->m_Data._width = width;
+		window->m_Data._height = height;
+		window->m_ShouldClose = false;
+		window->m_Window = nullptr;
+
+		window->m_Data.on_event = [window] (Event& e) {
+			if (e.GetEventType() == EventType::WindowClose) {
+				window->Close();
+				Window::Destroy(window);
 			}
 		};
-		should_close = false;
-		on_close = []() {};
+		window->m_OnDestroy = [](){};
 
-		int32_t result = glfwInit();
-		MOONLOIT_ASSERT(result, "Could not initialize glfw!");
-		glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
-		glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 4);
-		glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
+		if (sm_BoundWindow) {
+			sm_Windows.push_back(window);
 
-		glfwSetErrorCallback([](int error, const char* description) {
-			throw moonloit::Exception(fmt::format("GLFW error #{0}: {1}", error, description));
-		});
-		window = glfwCreateWindow(
-			width, height,
-			title,
-			NULL, NULL
-		);
-		MOONLOIT_ASSERT(window, "Could not create the window!");
-		glfwMakeContextCurrent(window);
-		result = gladLoadGL();
-		MOONLOIT_ASSERT(result, "Could not initiliaze glad!");
-		glViewport(0, 0, width, height);
+			window->m_Window = glfwCreateWindow(width, height, title, NULL, NULL);
+			MOONLOIT_ASSERT(window->m_Window, "Failed creating GLFWwindow!");
+			glfwSetWindowUserPointer(window->m_Window, &window->m_Data);
+		} else {
+			sm_BoundWindow = window;
+			int result = glfwInit();
+			MOONLOIT_ASSERT(result, "Failed initializing glfw!");
+			glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
 
-		glfwSetWindowUserPointer(window, &data);
-		set_glfw_callbacks();
-	}
-	Window::~Window() {
-		glfwDestroyWindow(window);
-		glfwTerminate();
-	}
+			window->m_Window = glfwCreateWindow(width, height, title, NULL, NULL);
+			MOONLOIT_ASSERT(window->m_Window, "Failed creating GLFWwindow!");
+			glfwSetWindowUserPointer(window->m_Window, &window->m_Data);
 
-	void Window::set_event_callback(event_callback on_event) {
-		data.on_event = on_event;
-	}
-	void Window::set_close_callback(close_callback on_close) {
-		this->on_close = on_close;
-	}
-
-	void Window::glfw_poll_events() const {
-		glfwPollEvents();
-	}
-	void Window::glfw_swap_buffers() const {
-		glfwSwapBuffers(window);
-	}
-
-	void Window::clear_frame(float r, float g, float b, float a) const {
-		glClearColor(r, g, b, a);
-		glClear(GL_COLOR_BUFFER_BIT);
-	}
-
-	bool Window::get_should_close() const {
-		return should_close;
-	}
-	void Window::close() {
-		should_close = true;
-		on_close();
-	}
-
-	GLFWwindow* Window::get_glfw_window() const {
+			mlt::InitInfo init;
+			mlt::RenderAPI::Init(init);
+		}
+		
+		SetGlfwCallbacks(window->m_Window);
 		return window;
 	}
 
-	void Window::set_glfw_callbacks() {
-		glfwSetWindowSizeCallback(window, [](GLFWwindow* window, int width, int height) {
-			WindowData& data = *(WindowData*)glfwGetWindowUserPointer(window);
-			data.window_width = width;
-			data.window_height = height;
+	void Window::Destroy(Window* window) {
+		if (!window) return;
+		window->m_OnDestroy();
+		glfwDestroyWindow(window->m_Window);
+		if (window == sm_BoundWindow) {
+			sm_OnBoundDestroy();
+			sm_BoundWindow = nullptr;
+			for (auto _window : sm_Windows) {
+				_window->m_OnDestroy();
+				glfwDestroyWindow(_window->m_Window);
+				delete _window;
+			}
+			sm_Windows.clear();
+			glfwTerminate();
+		} else {
+			sm_Windows.remove(window);
+		}
+		delete window;
+		window = nullptr;
+	}
 
-			glViewport(0, 0, width, height);
+	void Window::GlfwPollEvents() { glfwPollEvents(); }
+	void Window::GlfwMakeContextCurrent(GLFWwindow* _window) { glfwMakeContextCurrent(_window); }
+	void Window::GlfwSwapBuffers() const { glfwSwapBuffers(m_Window); }
+
+	void Window::SetGlfwCallbacks(GLFWwindow* _window) {
+		glfwSetWindowSizeCallback(_window, [] (GLFWwindow* window, int width, int height) {
+			WindowData& data = *(WindowData*)glfwGetWindowUserPointer(window);
+			data._width = width;
+			data._height = height;
 
 			WindowResizeEvent e(width, height);
 			data.on_event(e);
 		});
-		glfwSetWindowCloseCallback(window, [](GLFWwindow* window) {
+		glfwSetWindowCloseCallback(_window, [] (GLFWwindow* window) {
 			WindowData& data = *(WindowData*)glfwGetWindowUserPointer(window);
 
 			WindowCloseEvent event;
 			data.on_event(event);
 		});
-		glfwSetKeyCallback(window, [](GLFWwindow* window, int key, int scancode, int action, int mods) {
+		glfwSetKeyCallback(_window, [] (GLFWwindow* window, int key, int scancode, int action, int mods) {
 			WindowData& data = *(WindowData*)glfwGetWindowUserPointer(window);
 
 			switch (action) {
-				case GLFW_PRESS: {
+				case GLFW_PRESS:
+				{
 					KeyPressedEvent event(key, 0);
 					data.on_event(event);
 					break;
 				}
-				case GLFW_RELEASE: {
+				case GLFW_RELEASE:
+				{
 					KeyReleasedEvent event(key);
 					data.on_event(event);
 					break;
 				}
-				case GLFW_REPEAT: {
+				case GLFW_REPEAT:
+				{
 					KeyPressedEvent event(key, 1);
 					data.on_event(event);
 					break;
 				}
 			}
 		});
-		glfwSetMouseButtonCallback(window, [](GLFWwindow* window, int button, int action, int mods) {
+		glfwSetMouseButtonCallback(_window, [] (GLFWwindow* window, int button, int action, int mods) {
 			WindowData& data = *(WindowData*)glfwGetWindowUserPointer(window);
 
 			switch (action) {
-				case GLFW_PRESS: {
+				case GLFW_PRESS:
+				{
 					MouseButtonPressedEvent event(button);
 					data.on_event(event);
 					break;
 				}
-				case GLFW_RELEASE: {
+				case GLFW_RELEASE:
+				{
 					MouseButtonReleasedEvent event(button);
 					data.on_event(event);
 					break;
 				}
 			}
 		});
-		glfwSetScrollCallback(window, [](GLFWwindow* window, double x_offset, double y_offset) {
+		glfwSetScrollCallback(_window, [] (GLFWwindow* window, double x_offset, double y_offset) {
 			WindowData& data = *(WindowData*)glfwGetWindowUserPointer(window);
 
 			MouseScrolledEvent event(x_offset, y_offset);
 			data.on_event(event);
 		});
-		glfwSetCursorPosCallback(window, [](GLFWwindow* window, double x, double y) {
+		glfwSetCursorPosCallback(_window, [] (GLFWwindow* window, double x, double y) {
 			WindowData& data = *(WindowData*)glfwGetWindowUserPointer(window);
 
 			MouseMovedEvent event(x, y);

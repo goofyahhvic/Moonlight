@@ -4,29 +4,29 @@
 namespace vxl {
 	LayerStack::LayerStack() {}
 	LayerStack::~LayerStack() {
-		for (auto layer : layers)
+		for (auto layer : m_Layers)
 			delete layer;
 	}
 
-	void LayerStack::push_layer(Layer* layer) {
-		layers.emplace(layers.begin() + insert_index, layer);
-		insert_index++;
+	void LayerStack::PushLayer(Layer* layer) {
+		m_Layers.emplace(m_Layers.begin() + m_InsertIndex, layer);
+		m_InsertIndex++;
 	}
-	void LayerStack::push_overlay(Layer* overlay) {
-		layers.emplace_back(overlay);
+	void LayerStack::PushOverlay(Layer* overlay) {
+		m_Layers.emplace_back(overlay);
 	}
-	Layer* LayerStack::pop_layer(Layer* layer) {
-		auto it = std::find(layers.begin(), layers.end(), layer);
-		if (it != layers.end()) {
-			layers.erase(it);
-			insert_index--;
+	Layer* LayerStack::PopLayer(Layer* layer) {
+		auto it = std::find(m_Layers.begin(), m_Layers.end(), layer);
+		if (it != m_Layers.end()) {
+			m_Layers.erase(it);
+			m_InsertIndex--;
 		}
 		return layer;
 	}
-	Layer* LayerStack::pop_overlay(Layer* overlay) {
-		auto it = std::find(layers.begin(), layers.end(), overlay);
-		if (it != layers.end()) {
-			layers.erase(it);
+	Layer* LayerStack::PopOverlay(Layer* overlay) {
+		auto it = std::find(m_Layers.begin(), m_Layers.end(), overlay);
+		if (it != m_Layers.end()) {
+			m_Layers.erase(it);
 		}
 		return overlay;
 	}

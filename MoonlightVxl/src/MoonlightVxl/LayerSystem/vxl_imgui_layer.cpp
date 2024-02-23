@@ -4,7 +4,7 @@
 #include "vxl_window.hpp"
 
 #include <imgui/imgui.h>
-#include <imgui/backends/imgui_impl_opengl3.h>
+#include <imgui/backends/imgui_impl_dx11.h>
 #include <imgui/backends/imgui_impl_glfw.h>
 
 #include <GLFW/glfw3.h>
@@ -29,36 +29,34 @@ namespace vxl {
 			style.Colors[ImGuiCol_WindowBg].w = 1.0f;
 		}
 
-		ImGui_ImplGlfw_InitForOpenGL(glfwGetCurrentContext(), true);
-		ImGui_ImplOpenGL3_Init("#version 410");
+		ImGui_ImplGlfw_InitForOpenGL(Window::GetBound()->GetGlfwWindow(), true);
+		//ImGui_ImplOpenGL3_Init("#version 410");
 	}
 
 	ImguiLayer::~ImguiLayer() {
-		ImGui_ImplOpenGL3_Shutdown();
+		//ImGui_ImplOpenGL3_Shutdown();
 		ImGui_ImplGlfw_Shutdown();
 		ImGui::DestroyContext();
 	}
 
-	void ImguiLayer::imgui_begin() {
-		ImGui_ImplOpenGL3_NewFrame();
+	void ImguiLayer::ImguiBegin() {
+		//ImGui_ImplOpenGL3_NewFrame();
 		ImGui_ImplGlfw_NewFrame();
 		ImGui::NewFrame();
 	}
-	void ImguiLayer::imgui_finish() {
+	void ImguiLayer::ImguiFinish() {
 		ImGui::Render();
-		ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
+		//ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
 
 		ImGuiIO& io = ImGui::GetIO();
 		if (io.ConfigFlags & ImGuiConfigFlags_ViewportsEnable) {
-			GLFWwindow* backup_current_context = glfwGetCurrentContext();
 			ImGui::UpdatePlatformWindows();
 			ImGui::RenderPlatformWindowsDefault();
-			glfwMakeContextCurrent(backup_current_context);
 		}
 	}
 
 	static bool show = true;
-	void ImguiLayer::draw() {
+	void ImguiLayer::Draw() {
 		ImGui::ShowDemoWindow(&show);
 	}
 }

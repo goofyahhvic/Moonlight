@@ -4,6 +4,7 @@
 bin/
 bin-int/
 !external/bin/
+obj/
 
 *.sln
 *.vcxproj

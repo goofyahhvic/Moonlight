@@ -8,21 +8,25 @@
 
 namespace vxl {
 	class VXL_API App {
-		using event_callback_function = std::function<void(Event& e)>;
+		using EventFn = std::function<void(Event& e)>;
 	public:
-		App(const uint32_t width = 1280, const uint32_t height = 720, const char* title = "Unnamed Window");
+		App(const uint32_t width = 1280U, const uint32_t height = 720U, const char* title = "Unnamed Window");
 		virtual ~App();
 	public:
-		virtual void run();
+		virtual void Run();
+		inline static App* Get() { return sm_This; }
 	protected:
-		virtual void update();
+		virtual void Update();
 
-		virtual void on_event(Event& e);
-		virtual void on_window_close();
+		virtual void OnEvent(Event& e);
+		virtual void OnWindowClose();
+		virtual void OnBoundWindowClose();
 	protected:
-		Window window;
+		Window* window;
 		ImguiLayer* imgui;
 		vxl::LayerStack layers;
-		bool should_close;
+		bool shouldClose;
+	private:
+		static App* sm_This;
 	};
 }

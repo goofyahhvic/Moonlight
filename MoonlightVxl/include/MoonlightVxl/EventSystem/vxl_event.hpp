@@ -17,36 +17,36 @@ namespace vxl {
 		EventCategoryMouseButton  = BIT(4)
 	};
 
-#define GET_EVENT_TYPE e.get_event_type()
-#define _GET_EVENT_TYPE(e) e.get_event_type()
+#define GET_EVENT_TYPE e.GetEventType()
+#define _GET_EVENT_TYPE(e) e.GetEventType()
 
-#define EVENT_TYPE_IS(x) (e.get_event_type() == vxl::EventType::x)
-#define EVENT_IS_IN_CATEGORY(x) (e.is_in_category(vxl::EventCategory##x))
-#define EVENT_IS_IN(x) (e.is_in_category(vxl::x))
+#define EVENT_TYPE_IS(x) (e.GetEventType() == vxl::EventType::x)
+#define EVENT_IS_IN_CATEGORY(x) (e.IsInCategory(vxl::EventCategory##x))
+#define EVENT_IS_IN(x) (e.IsInCategory(vxl::x))
 
-#define _EVENT_TYPE_IS(e, x) (e.get_event_type() == vxl::EventType::x)
-#define _EVENT_IS_IN_CATEGORY(e, x) (e.is_in_category(vxl::EventCategory##x))
-#define _EVENT_IS_IN(e, x) (e.is_in_category(vxl::x))
+#define _EVENT_TYPE_IS(e, x) (e.GetEventType() == vxl::EventType::x)
+#define _EVENT_IS_IN_CATEGORY(e, x) (e.IsInCategory(vxl::EventCategory##x))
+#define _EVENT_IS_IN(e, x) (e.IsInCategory(vxl::x))
 
 
 #define EVENT_CLASS_TYPE(type) static EventType get_static_type() { return EventType::##type; }\
-					virtual EventType get_event_type() const override { return get_static_type(); }\
-					virtual const char* get_name() const override { return #type;}
-#define EVENT_CLASS_CATEGORY(category) virtual int32_t get_category_flags() const override { return category; }
+					virtual EventType GetEventType() const override { return get_static_type(); }\
+					virtual const char* GetName() const override { return #type;}
+#define EVENT_CLASS_CATEGORY(category) virtual int32_t GetCategoryFlags() const override { return category; }
 
 	class VXL_API Event {
 	public:
-		virtual EventType get_event_type() const = 0;
-		virtual const char* get_name() const = 0;
-		virtual int32_t get_category_flags() const = 0;
-		virtual std::string to_string() const { return get_name(); }
+		virtual EventType GetEventType() const = 0;
+		virtual const char* GetName() const = 0;
+		virtual int32_t GetCategoryFlags() const = 0;
+		virtual std::string ToString() const { return GetName(); }
 
-		inline bool is_in_category(EventCategory category) const { return get_category_flags() & category; }
+		inline bool IsInCategory(EventCategory category) const { return GetCategoryFlags() & category; }
 		bool handled = false;
 	};
 
 	inline std::ostream& operator << (std::ostream& os, const Event& e) {
-		return os << e.to_string();
+		return os << e.ToString();
 	}
 
 }

@@ -8,39 +8,39 @@
 namespace vxl {
 	class VXL_API Layer {
 	public:
-		Layer(const std::string& debug_name = "Layer") : input(false), debug_name(debug_name) {}
+		Layer(const std::string& debug_name = "Layer") : input(false), debugName(debug_name) {}
 		virtual ~Layer() {}
 	public:
-		virtual void update() {}
-		virtual void draw() {}
-		virtual void on_event(Event& e) {
-			switch (e.get_event_type()) {
+		virtual void Update() {}
+		virtual void Draw() {}
+		virtual void OnEvent(Event& e) {
+			switch (e.GetEventType()) {
 				case EventType::KeyPressed:
 				{
-					input.get_keys()[GET_EVENT_KEYCODE] = true;
+					input.GetKeys()[GET_EVENT_KEYCODE] = true;
 					break;
 				}
 				case EventType::KeyReleased:
 				{
-					input.get_keys()[GET_EVENT_KEYCODE] = false;
+					input.GetKeys()[GET_EVENT_KEYCODE] = false;
 					break;
 				}
 				case EventType::MouseButtonPressed:
 				{
-					input.get_keys()[GET_EVENT_MOUSE_BUTTON] = true;
+					input.GetKeys()[GET_EVENT_MOUSE_BUTTON] = true;
 					break;
 				}
 				case EventType::MouseButtonReleased:
 				{
-					input.get_keys()[GET_EVENT_MOUSE_BUTTON] = false;
+					input.GetKeys()[GET_EVENT_MOUSE_BUTTON] = false;
 					break;
 				}
 			}
 		}
 
-		inline const std::string& get_name() const { return debug_name; }
+		inline const std::string& GetName() const { return debugName; }
 	protected:
 		Input input;
-		std::string debug_name;
+		std::string debugName;
 	};
 }
