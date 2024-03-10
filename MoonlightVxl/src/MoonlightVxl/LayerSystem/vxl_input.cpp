@@ -6,7 +6,6 @@
 
 namespace vxl {
 	MousePosition GlobalInput::sm_Pos;
-	GlobalInput::GlobalInput() {}
 
 	bool GlobalInput::GetKey(int32_t keycode) {
 		int32_t state = glfwGetKey(Window::GetBound()->GetGlfwWindow(), keycode);

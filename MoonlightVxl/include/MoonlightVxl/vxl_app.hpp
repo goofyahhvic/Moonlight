@@ -15,6 +15,14 @@ namespace vxl {
 	public:
 		virtual void Run();
 		inline static App* Get() { return sm_This; }
+
+		static inline void SetVersion(
+			uint32_t variant = 0,
+			uint32_t major = 1,
+			uint32_t minor = 0,
+			uint32_t patch = 0
+		) { MOONLOIT_SET_VERSION(sm_Version, variant, major, minor, patch);
+			Window::SetClientMoonloitInitInfo(&sm_Version); };
 	protected:
 		virtual void Update();
 
@@ -26,6 +34,7 @@ namespace vxl {
 		ImguiLayer* imgui;
 		vxl::LayerStack layers;
 		bool shouldClose;
+		static Version sm_Version;
 	private:
 		static App* sm_This;
 	};

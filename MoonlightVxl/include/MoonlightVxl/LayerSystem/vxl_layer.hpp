@@ -8,7 +8,11 @@
 namespace vxl {
 	class VXL_API Layer {
 	public:
-		Layer(const std::string& debug_name = "Layer") : input(false), debugName(debug_name) {}
+		Layer(const std::string& debug_name = "Layer") : input(false)
+#ifndef MLT_DISTRIBUTION
+			, debugName(debug_name)
+#endif
+		{}
 		virtual ~Layer() {}
 	public:
 		virtual void Update() {}
@@ -38,9 +42,15 @@ namespace vxl {
 			}
 		}
 
-		inline const std::string& GetName() const { return debugName; }
+#ifndef MLT_DISTRIBUTION
+		inline const std::string* const GetName() const { return &debugName; }
+#else
+		inline const std::string* const GetName() const { return nullptr; }
+#endif
 	protected:
 		Input input;
+#ifndef MLT_DISTRIBUTION
 		std::string debugName;
+#endif
 	};
 }

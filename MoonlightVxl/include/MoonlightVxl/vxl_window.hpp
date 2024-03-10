@@ -1,12 +1,16 @@
 #pragma once
 #include "core.h"
 
+#include "mlt_init.hpp"
+
 #ifndef GLFW_WINDOW
 #define GLFW_WINDOW
 struct GLFWwindow;
 #endif // GLFW_WINDOW
 
 namespace vxl {
+	using Version = mlt::InitInfo::Version;
+
 	#ifndef VXL_EVENT
 	#define VXL_EVENT
 	class Event;
@@ -33,6 +37,10 @@ namespace vxl {
 		static inline void Bind(Window* window) { if (sm_BoundWindow == window) return; sm_Windows.remove(window); sm_Windows.push_back(sm_BoundWindow); sm_BoundWindow = window; }
 		inline void Bind() { Bind(this); }
 		static inline Window* GetBound() { return sm_BoundWindow; }
+		///
+		/// Does not include the bound window.
+		///
+		static inline const Windows& GetWindows() { return sm_Windows; }
 
 		static void SetGlfwCallbacks(GLFWwindow* _window);
 		static void GlfwPollEvents();
@@ -47,14 +55,10 @@ namespace vxl {
 		inline void SetEventCallback(const EventFn& on_event) { m_Data.on_event = on_event; }
 		inline void SetDestroyCallback(const CloseFn& on_close) { m_OnDestroy = on_close; }
 		static inline void SetBoundDestroyCallback(const CloseFn& on_bound_close) { sm_OnBoundDestroy = on_bound_close; }
+		static void SetClientMoonloitInitInfo(Version* app_version) { sm_AppVersion = app_version; }
 
 		inline uint32_t GetWidth() const { return m_Data._width; }
 		inline uint32_t GetHeight() const { return m_Data._height; }
-
-		///
-		/// Does not include the bound window.
-		///
-		static const Windows& GetWindows() { return sm_Windows; }
 	private:
 		GLFWwindow* m_Window;
 		WindowData m_Data;
@@ -65,5 +69,7 @@ namespace vxl {
 		static CloseFn sm_OnBoundDestroy;
 		static Window* sm_BoundWindow;
 		static Windows sm_Windows;
+
+		static Version* sm_AppVersion;
 	};
 }

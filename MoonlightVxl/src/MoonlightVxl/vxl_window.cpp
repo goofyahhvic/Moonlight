@@ -1,6 +1,7 @@
 #include "vxl_pch.hpp"
 #include "vxl_window.hpp"
 
+#define GLFW_INCLUDE_VULKAN
 #include <GLFW/glfw3.h>
 #ifdef MLT_PLATFORM_WINDOWS
 	#define GLFW_EXPOSE_NATIVE_WIN32
@@ -13,11 +14,13 @@
 #include "EventSystem/vxl_app_event.hpp"
 #include "EventSystem/vxl_key_event.hpp"
 #include "EventSystem/vxl_mouse_event.hpp"
+#include "./MoonlightVxl/vxl_init.hpp"
 
 namespace vxl {
 	Window* Window::sm_BoundWindow;
 	Window::CloseFn Window::sm_OnBoundDestroy;
 	Window::Windows Window::sm_Windows;
+	Version* Window::sm_AppVersion;
 
 	Window* Window::Create(uint32_t width, uint32_t height, const char* title) {
 		Window* window = new Window();
@@ -53,6 +56,24 @@ namespace vxl {
 			glfwSetWindowUserPointer(window->m_Window, &window->m_Data);
 
 			mlt::InitInfo init;
+
+			init.engine_name = Engine::to_string().data();
+			init.engine_version = &Engine::GetVersion();
+
+			init.app_name = title;
+			init.app_version = sm_AppVersion;
+
+			init.VULKAN_get_extensions = [](const bool _vls_enabled) {
+				uint32_t _extension_count = 0;
+				const char** _extensions;
+
+				_extensions = glfwGetRequiredInstanceExtensions(&_extension_count);
+				std::vector<const char*> extensions(_extensions, _extensions + _extension_count);
+				if (_vls_enabled) {
+					extensions.push_back(VK_EXT_DEBUG_UTILS_EXTENSION_NAME);
+				}
+				return extensions;
+			};
 			mlt::RenderAPI::Init(init);
 		}
 		

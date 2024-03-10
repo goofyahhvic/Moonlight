@@ -6,13 +6,11 @@
 
 namespace vxl {
 	App* App::sm_This;
+	Version App::sm_Version;
 
 	App::App(const uint32_t width, const uint32_t height, const char* title)
 		: shouldClose(false), window(nullptr), imgui(nullptr) {
-		if (sm_This) {
-			throw mlt::Exception("Cannot create multiple instances of vxl::App!");
-			return;
-		}
+		MOONLOIT_ASSERT(!sm_This, "Cannot create multiple instances of vxl::App!");
 		sm_This = this;
 
 		Window::Bind(nullptr);
@@ -33,6 +31,7 @@ namespace vxl {
 	}
 	App::~App() {
 		if (window) Window::Destroy(window);
+		mlt::RenderAPI::CleanUp();
 	}
 
 	void App::Run() {

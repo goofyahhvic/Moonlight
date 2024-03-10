@@ -6,7 +6,8 @@
 namespace vxl {
 	using MousePosition = std::pair<double, double>;
 	class VXL_API GlobalInput {
-		GlobalInput();
+		GlobalInput() {}
+		~GlobalInput() {}
 	public:
 		static bool GetKey(int32_t keycode);
 		static bool GetMouseButton(int32_t id);
@@ -29,11 +30,19 @@ namespace vxl {
 		virtual ~Input();
 	public:
 		inline KeysArray& GetKeys() { return m_Keys; }
+		inline const KeysArray& GetKeys() const { return m_Keys; }
+
 		inline bool& GetKey(uint32_t index) { return m_Keys[index]; }
+		inline bool GetKey(uint32_t index) const { return m_Keys[index]; }
+
 		inline void SetKey(uint32_t index, bool value) { m_Keys[index] = value; }
 
 		inline MouseButtonsArray& GetMouseButtons() { return m_MouseButtons; }
+		inline const MouseButtonsArray& GetMouseButtons() const { return m_MouseButtons; }
+
 		inline bool& GetMouseButton(uint32_t index) { return m_MouseButtons[index]; }
+		inline bool GetMouseButton(uint32_t index) const { return m_MouseButtons[index]; }
+
 		inline void SetMouseButton(uint32_t index, bool value) { m_MouseButtons[index] = value; }
 	private:
 		KeysArray m_Keys;
