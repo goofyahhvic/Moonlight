@@ -11,7 +11,7 @@ namespace vxl {
 		using EventFn = std::function<void(Event& e)>;
 	public:
 		App(const uint32_t width = 1280U, const uint32_t height = 720U, const char* title = "Unnamed Window");
-		virtual ~App();
+		virtual ~App() noexcept(false);
 	public:
 		virtual void Run();
 		inline static App* Get() { return sm_This; }
