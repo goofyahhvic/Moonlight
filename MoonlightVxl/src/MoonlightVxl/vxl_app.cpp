@@ -29,7 +29,7 @@ namespace vxl {
 		//imgui = new ImguiLayer();
 		//layers.PushOverlay(imgui);
 	}
-	App::~App() {
+	App::~App() noexcept(false) {
 		if (window) Window::Destroy(window);
 		mlt::RenderAPI::CleanUp();
 	}

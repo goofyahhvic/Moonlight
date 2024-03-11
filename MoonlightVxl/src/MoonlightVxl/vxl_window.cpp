@@ -68,9 +68,13 @@ namespace vxl {
 				const char** _extensions;
 
 				_extensions = glfwGetRequiredInstanceExtensions(&_extension_count);
-				std::vector<const char*> extensions(_extensions, _extensions + _extension_count);
+				std::vector<const char*> extensions;
+				for (unsigned int i = 0; i < _extension_count; i++) {
+					extensions.push_back(_extensions[i]);
+				}
 				if (_vls_enabled) {
 					extensions.push_back(VK_EXT_DEBUG_UTILS_EXTENSION_NAME);
+					extensions.push_back(VK_EXT_DEBUG_REPORT_EXTENSION_NAME);
 				}
 				return extensions;
 			};
